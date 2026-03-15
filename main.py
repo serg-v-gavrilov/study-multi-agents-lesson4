@@ -21,9 +21,16 @@ def main():
 
         for chunk in agent.stream(
             {"messages": [("user", user_input)]},
+            config={"configurable": {"thread_id": "main"}},
         ):
-            if "agent" in chunk and "messages" in chunk["agent"]:
-                for msg in chunk["agent"]["messages"]:
+            chunkName = ""
+            if "agent" in chunk:
+                chunkName = "agent"
+            elif "model" in chunk:
+                chunkName = "model"
+
+            if chunkName != "" and "messages" in chunk[chunkName]:
+                for msg in chunk[chunkName]["messages"]:
                     if hasattr(msg, "content") and msg.content:
                         print(f"\nAgent: {msg.content}")
 
