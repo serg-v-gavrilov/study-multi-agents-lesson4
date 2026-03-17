@@ -1,18 +1,4 @@
-from agent import agent
-from config import Settings
-from langgraph.errors import GraphRecursionError
-
-def print_chunk(chunk):
-    chunkName = ""
-    if "agent" in chunk:
-        chunkName = "agent"
-    elif "model" in chunk:
-        chunkName = "model"
-
-    if chunkName != "" and "messages" in chunk[chunkName]:
-        for msg in chunk[chunkName]["messages"]:
-            if hasattr(msg, "content") and msg.content:
-                print(f"\nAgent: {msg.content}")
+from agent import run_agent
 
 
 def main():
@@ -33,24 +19,8 @@ def main():
             print("Goodbye!")
             break
 
-        try:
-            for chunk in agent.stream(
-                {"messages": [("user", user_input)]},
-                config={
-                    "configurable": {"thread_id": "main"},
-                    "recursion_limit": Settings.max_iterations
-                },
-            ):
-                print_chunk(chunk)
-        except GraphRecursionError:
-            for chunk in agent.stream(
-                {"messages": [("user", "Підсумуй результати досліджень та запиши звіт на основі вже зібраної інформації.")]},
-                config={
-                    "configurable": {"thread_id": "main"},
-                    "recursion_limit": Settings.max_iterations
-                },
-            ):
-                print_chunk(chunk)
+        response = run_agent(user_input)
+        print(f"\nAgent: {response}")
 
 
 if __name__ == "__main__":
