@@ -1,4 +1,5 @@
 from agent import agent
+from config import Settings
 from langgraph.errors import GraphRecursionError
 
 def print_chunk(chunk):
@@ -35,13 +36,19 @@ def main():
         try:
             for chunk in agent.stream(
                 {"messages": [("user", user_input)]},
-                config={"configurable": {"thread_id": "main"}},
+                config={
+                    "configurable": {"thread_id": "main"},
+                    "recursion_limit": Settings.max_iterations
+                },
             ):
                 print_chunk(chunk)
         except GraphRecursionError:
             for chunk in agent.stream(
                 {"messages": [("user", "Підсумуй результати досліджень та запиши звіт на основі вже зібраної інформації.")]},
-                config={"configurable": {"thread_id": "main"}},
+                config={
+                    "configurable": {"thread_id": "main"},
+                    "recursion_limit": Settings.max_iterations
+                },
             ):
                 print_chunk(chunk)
 
