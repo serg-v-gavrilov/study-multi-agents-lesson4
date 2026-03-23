@@ -13,7 +13,10 @@ def write_report(filename: str, content: str) -> str:
 
 def web_search(query: str) -> list[dict]:
     try:
-        return DDGS().text(query, max_results=Settings.max_search_results, backend=SEARCH_ENGINE)
+        text = DDGS().text(query, max_results=Settings.max_search_results, backend=SEARCH_ENGINE)
+        if text is None:
+            return "web_search error: failed to fetch search result"
+        return text[:Settings.max_url_content_length]
     except Exception as e:
         return f"web_search error: {type(e).__name__}: {e}"
 
