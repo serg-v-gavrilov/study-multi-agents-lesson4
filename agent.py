@@ -21,7 +21,7 @@ def call_tools(tool_calls: List[ChatCompletionMessageToolCall]):
         else:
             try:
                 result = func(**args)
-            except (EOFError, KeyboardInterrupt):
+            except Exception as e:
                 result = f"call_tools error: {type(e).__name__}: {e}"
 
 
