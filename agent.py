@@ -19,7 +19,11 @@ def call_tools(tool_calls: List[ChatCompletionMessageToolCall]):
         if func is None:
             result = f"error: unknown tool '{name}'"
         else:
-            result = func(**args)
+            try:
+                result = func(**args)
+            except (EOFError, KeyboardInterrupt):
+                result = f"call_tools error: {type(e).__name__}: {e}"
+
 
         history.append({
             "role": "tool",
@@ -63,6 +67,6 @@ def run_agent(user_input: str) -> str:
     )
     final = response.choices[0].message.content or ""
     history.append({"role": "assistant", "content": final})
-    call_tools(message.tool_calls)
+    call_tools(final.tool_calls)
 
     return final
